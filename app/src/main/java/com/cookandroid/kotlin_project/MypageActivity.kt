@@ -5,8 +5,6 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.cookandroid.kotlin_project.databinding.ActivityMypageBinding
-import androidx.appcompat.widget.Toolbar
-import com.cookandroid.kotlin_project.databinding.ActivityJoinBinding
 
 class MypageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMypageBinding

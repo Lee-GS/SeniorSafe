@@ -53,7 +53,6 @@ class StompClientService : Service() {
                 token = intent.getStringExtra(loginTokenIntentKey).toString()
             else
                 stopSelf()
-
             if (intent?.hasExtra(serverUrlIntentKey) == true)
                 server_url = intent?.getStringExtra(serverUrlIntentKey).toString()
         }

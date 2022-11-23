@@ -97,9 +97,6 @@ class MainActivity_maps : AppCompatActivity(), OnMapReadyCallback{
         //뒤로가기 버튼 이미지 변경
         actionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
 
-
-
-
         //네비게이션뷰 아이템 선택 이벤트
         navigationView.setNavigationItemSelectedListener(
             object : NavigationView.OnNavigationItemSelectedListener{

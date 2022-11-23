@@ -1,24 +1,23 @@
 package com.cookandroid.kotlin_project
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.cookandroid.kotlin_project.databinding.ReceiveMsgBinding
 import com.cookandroid.kotlin_project.databinding.SendMsgBinding
+import com.cookandroid.kotlin_project.stomp.dto.StompChatDTO
 import java.sql.Date
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 
-class ChatAdapter(context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatAdapter(context: Context, val arrayList: ArrayList<StompChatDTO>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var data = mutableListOf<User>()
+    internal lateinit var preferences: SharedPreferences
+    var data = mutableListOf<StompChatDTO>()
 
-    fun addItem(item: User) {//아이템 추가
+    fun addItem(item: StompChatDTO) {//아이템 추가
         if (data != null) {
             data.add(item)
         }
@@ -53,27 +52,29 @@ class ChatAdapter(context: Context): RecyclerView.Adapter<RecyclerView.ViewHolde
     //내가친 채팅 뷰홀더
     inner class Holder_send(private val binding: SendMsgBinding) : RecyclerView.ViewHolder(binding.root) {
         //친구목록 모델의 변수들 정의하는부분
-        fun bind(user: User){
+        fun bind(user: StompChatDTO){
             val dateFormat = SimpleDateFormat("HH:mm")
             val date = Date(System.currentTimeMillis())
-            binding.sendMsg.text = user.message
+            binding.sendMsg.text = user.payload
             binding.sendTime.text = dateFormat.format(date).toString()
         }
     }
     //상대가친 채팅 뷰홀더
     inner class Holder_receive(private val binding: ReceiveMsgBinding) : RecyclerView.ViewHolder(binding.root) {
         //친구목록 모델의 변수들 정의하는부분
-        fun bind(user: User){
+        fun bind(user: StompChatDTO){
             val dateFormat = SimpleDateFormat("HH:mm")
             val date = Date(System.currentTimeMillis())
-            binding.receiveName.text = user.realname
-            binding.receiveMsg.text = user.message
+            binding.receiveName.text = user.sender?.id
+            binding.receiveMsg.text = user.payload
             binding.receiveTime.text = dateFormat.format(date).toString()
         }
     }
     /*override fun getItemViewType(position: Int): Int {//여기서 뷰타입을 1, 2로 바꿔서 지정해줘야 내채팅 너채팅을 바꾸면서 쌓을 수 있음
         //내 아이디와 arraylist의 name이 같다면 내꺼 아니면 상대꺼
-        return if () {
+        MySharedPreferences.getUserId()
+
+        return if (user.sender?.id ==  ) {
             1
         } else {
             2

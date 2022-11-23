@@ -1,5 +1,6 @@
 import android.content.Context
 import android.content.SharedPreferences
+import com.cookandroid.kotlin_project.ChatAdapter
 import com.cookandroid.kotlin_project.backendinterface.auth.signup
 import com.cookandroid.kotlin_project.backendinterface.auth.signin
 import com.google.android.material.navigation.NavigationView
