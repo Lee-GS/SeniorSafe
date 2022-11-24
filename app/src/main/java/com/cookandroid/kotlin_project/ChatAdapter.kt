@@ -70,6 +70,7 @@ class ChatAdapter(context: Context, val arrayList: ArrayList<StompChatDTO>): Rec
             binding.receiveTime.text = dateFormat.format(date).toString()
         }
     }
+
     /*override fun getItemViewType(position: Int): Int {//여기서 뷰타입을 1, 2로 바꿔서 지정해줘야 내채팅 너채팅을 바꾸면서 쌓을 수 있음
         //내 아이디와 arraylist의 name이 같다면 내꺼 아니면 상대꺼
         MySharedPreferences.getUserId()
