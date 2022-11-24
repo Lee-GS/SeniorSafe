@@ -129,7 +129,7 @@ class StompClientService : Service() {
                 val result = response.code();
                 if(result in 200..299) {
                     Log.d("api_group_token", response.body().toString())
-                    subscribeStomp(response.body()!!)
+                    subscribeStomp(response.body()!!, groupId)
                 }
                 else {
                     Log.w("api_group_token", response.toString())
@@ -143,7 +143,7 @@ class StompClientService : Service() {
     }
 
     @SuppressLint("CheckResult")
-    private fun subscribeStomp(tokens: GroupTokenDTO) {
+    private fun subscribeStomp(tokens: GroupTokenDTO, groupId: String) {
         handlerThread.post(Runnable {
             var headers = listOf(StompHeader("token", tokens.token))
             stompClient!!.topic("/sub/chat/${tokens.channelKey}", headers).subscribe { topicMessage ->
@@ -160,7 +160,7 @@ class StompClientService : Service() {
                 var gpsDTO = gson.fromJson(topicMessage.payload, StompGpsDTO::class.java)
                 Log.d("/sub/chat/${tokens.channelKey}", gpsDTO.toString())
             }
-            group_tokens.add(tokens)
+            group_tokens[groupId] = tokens
         })
     }
 
@@ -184,45 +184,19 @@ class StompClientService : Service() {
         })
     }
 
-    fun sendChat(requestDTO: StompChatDTO, tokenKey: String) {
+    fun sendChat(requestDTO: StompChatDTO, groupId: String) {
         handlerThread.post(Runnable {
-            if(group_tokens[tokenKey] != null){
-                tokens ->
-                    val token = group_tokens.get(tokenKey)?.token
 
-                    var header = listOf(
-                        StompHeader("token", group_tokens.get(tokenKey).token),
-                        StompHeader("destination", "/pub/gps/upload")
-                    )
+            var header = listOf(
+                StompHeader("token", group_tokens[groupId]?.token),
+                StompHeader("destination", "/pub/gps/upload"))
 
-                    var payload = JsonObject()
-                    payload.addProperty("latitude", latitude.toString())
-                    payload.addProperty("longitude", longitude.toString())
+            var payload = gson.toJson(requestDTO)
 
-                    var stompMessage = StompMessage("MESSAGE", header, payload.toString())
-
-                    Log.d("debug", stompMessage.toString())
-                    stompClient!!.send(stompMessage).subscribe()
-            }
-
+            var stompMessage = StompMessage("MESSAGE", header, payload.toString())
+            Log.d("debug", stompMessage.toString())
+            stompClient!!.send(stompMessage).subscribe()
         })
     }
 }
 
-
-        tokens ->
-                val token = group_tokens.get(tokenKey)?.token
-
-                var header = listOf(
-                    StompHeader("token", group_tokens.get(tokenKey).token),
-                    StompHeader("destination", "/pub/gps/upload")
-                )
-
-                var payload = JsonObject()
-                payload.addProperty("latitude", latitude.toString())
-                payload.addProperty("longitude", longitude.toString())
-
-                var stompMessage = StompMessage("MESSAGE", header, payload.toString())
-
-                Log.d("debug", stompMessage.toString())
-                stompClient!!.send(stompMessage).subscribe()

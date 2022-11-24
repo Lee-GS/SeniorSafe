@@ -7,7 +7,7 @@ import com.google.gson.annotations.Expose
 data class StompChatDTO(
     @Expose(serialize = false)
     val sender: MemberDTO ?= null,
-    val payload: String ?= null,
     @Expose(serialize = false)
-    val sendTime: String ?= null
+    val sendTime: String ?= null,
+    val payload: String ?= null
 )
