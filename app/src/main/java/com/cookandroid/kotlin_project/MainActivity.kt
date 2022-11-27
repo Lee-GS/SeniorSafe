@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                     if(result in 200..299) {
                         Log.d("로그인성공", response.body().toString())
                         intent3.putExtra("token_login", response.body()!!.token)
+                        stopService(intent3)
                         startService(intent3)
                         startActivity(intent2)
                     }
@@ -68,6 +69,7 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onFailure(call: Call<UserDTO>, t: Throwable) {
                     Log.e("연결 실패","${t.localizedMessage}")
+                    t.printStackTrace()
                     dialog.setTitle("에러")
                     dialog.setMessage("로그인에 실패하셨습니다.")
                     dialog.show()

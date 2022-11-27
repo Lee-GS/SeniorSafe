@@ -27,7 +27,7 @@ import ua.naiksoftware.stomp.dto.StompMessage
 
 class StompClientService : Service() {
 
-    private var server_url: String = "ws://backend.seniorsafe.tk:8080/ws-stomp"
+    private var server_url: String = "ws://kangtong1105.codns.com:8080/ws-stomp/websocket"
     private var token: String = ""
     private var group_tokens = HashMap<String, GroupTokenDTO>()
     private var stompClient: StompClient ?= null
@@ -72,6 +72,7 @@ class StompClientService : Service() {
                 token = p0.getStringExtra(loginTokenIntentKey).toString()
             if (p0.hasExtra(serverUrlIntentKey))
                 server_url = p0?.getStringExtra(serverUrlIntentKey).toString()
+
             connectToStompServer()
         }
 
@@ -117,7 +118,8 @@ class StompClientService : Service() {
             }
 
             override fun onFailure(call: Call<List<GroupDTO>>, t: Throwable) {
-                Log.e("api_group_get","${t.localizedMessage}")
+                Log.e("SubscribeStomp","${t.localizedMessage}")
+                t.printStackTrace()
             }
         })
     }
@@ -137,7 +139,7 @@ class StompClientService : Service() {
             }
 
             override fun onFailure(call: Call<GroupTokenDTO>, t: Throwable) {
-                Log.e("api_group_token", t.localizedMessage)
+                Log.e("getGroupTokens", t.localizedMessage)
             }
         })
     }
@@ -189,7 +191,7 @@ class StompClientService : Service() {
 
             var header = listOf(
                 StompHeader("token", group_tokens[groupId]?.token),
-                StompHeader("destination", "/pub/gps/upload"))
+                StompHeader("destination", "/pub/chat"))
 
             var payload = gson.toJson(requestDTO)
 

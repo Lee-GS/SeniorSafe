@@ -181,6 +181,7 @@ class MainActivity_maps : AppCompatActivity(), OnMapReadyCallback{
 
                 naverMap.addOnLocationChangeListener { location ->
                     Log.d("GPS", "${location.latitude}, ${location.longitude}")
+                    Log.d("GPS", "StompStatus:$mStompServiceBound")
 
                     if(mStompServiceBound)
                         stompService.sendGpsPos(location.latitude, location.longitude)

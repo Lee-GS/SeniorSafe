@@ -17,7 +17,7 @@ interface group_get {
     fun register(@Header("Authorization") BearerToken : String) : Call<List<GroupDTO>>
 
     companion object { // static 처럼 공유객체로 사용가능함. 모든 인스턴스가 공유하는 객체로서 동작함.
-        private const val BASE_URL = "https://seniorsafe.loca.lt/" // 주소
+        private const val BASE_URL = "http://kangtong1105.codns.com:8080" // 주소
 
         fun create(): group_get {
             val gson : Gson = GsonBuilder().setLenient().create();
