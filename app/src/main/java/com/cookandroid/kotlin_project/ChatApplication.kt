@@ -5,15 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
-import android.view.View
-import android.widget.Adapter
-import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.cookandroid.kotlin_project.databinding.ActivityChatApplicationBinding
 import com.cookandroid.kotlin_project.localDB.database.UserDatabase
-import com.cookandroid.kotlin_project.stomp.StompClientService
-import com.cookandroid.kotlin_project.stomp.dto.StompChatDTO
+import com.cookandroid.kotlin_project.backendinterface.stomp.StompClientService
+import com.cookandroid.kotlin_project.backendinterface.stomp.dto.StompChatDTO
 
 class ChatApplication : AppCompatActivity() {
 

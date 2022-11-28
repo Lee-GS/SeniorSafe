@@ -6,11 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import com.cookandroid.kotlin_project.databinding.ReceiveMsgBinding
 import com.cookandroid.kotlin_project.databinding.SendMsgBinding
-import com.cookandroid.kotlin_project.localDB.database.UserDatabase
-import com.cookandroid.kotlin_project.stomp.dto.StompChatDTO
+import com.cookandroid.kotlin_project.backendinterface.stomp.dto.StompChatDTO
 import java.sql.Date
 import java.text.SimpleDateFormat
 

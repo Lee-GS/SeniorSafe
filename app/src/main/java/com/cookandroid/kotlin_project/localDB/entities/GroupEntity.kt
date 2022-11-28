@@ -9,6 +9,4 @@ data class GroupEntity(
     @PrimaryKey(autoGenerate = true) var id: Int,
     @ColumnInfo(name = "gid") var gid: String,
     @ColumnInfo(name = "name") var name: String?,
-
-    val members: List<MemberEntity>
 )

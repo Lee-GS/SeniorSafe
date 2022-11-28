@@ -1,6 +1,5 @@
-package com.cookandroid.kotlin_project.localDB
+package com.cookandroid.kotlin_project.localDB.entities
 
-import androidx.room.AutoMigration
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey

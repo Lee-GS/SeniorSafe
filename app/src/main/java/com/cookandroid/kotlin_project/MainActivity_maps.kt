@@ -1,49 +1,26 @@
 package com.cookandroid.kotlin_project
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.FragmentActivity
 import com.cookandroid.kotlin_project.BuildConfig.api_key
-import com.cookandroid.kotlin_project.stomp.StompClientService
-import com.google.android.gms.location.*
+import com.cookandroid.kotlin_project.backendinterface.stomp.StompClientService
 import com.google.android.material.navigation.NavigationView
-import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
-import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
-import io.reactivex.disposables.Disposable
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
-import java.net.Socket
-import java.util.concurrent.TimeUnit
-import java.util.logging.Level
-import java.util.logging.Logger
-import kotlin.concurrent.thread
-
 
 
 class MainActivity_maps : AppCompatActivity(), OnMapReadyCallback{

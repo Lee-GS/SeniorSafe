@@ -21,7 +21,7 @@ interface signup {
 
         fun create(): signup {
 
-            val gson : Gson = GsonBuilder().setLenient().create();
+            val gson : Gson = GsonBuilder().setLenient().create()
 
             return Retrofit.Builder()
                 .baseUrl(BASE_URL)

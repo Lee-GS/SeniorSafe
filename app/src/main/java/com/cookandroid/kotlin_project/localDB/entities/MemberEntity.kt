@@ -10,7 +10,5 @@ data class MemberEntity(
     @ColumnInfo(name = "mid") var mid: String,
     @ColumnInfo(name = "nickname") var nickname: String,
     @ColumnInfo(name = "isManager") var isManager: Boolean,
-    @ColumnInfo(name = "token") var token: String,
-    
-    @ColumnInfo(name = "group") var group: GroupEntity
+    @ColumnInfo(name = "groupId") var groupId: Int
 )

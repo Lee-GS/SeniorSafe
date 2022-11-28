@@ -2,8 +2,7 @@ package com.cookandroid.kotlin_project.localDB.dao
 
 import androidx.annotation.NonNull
 import androidx.room.*
-import com.cookandroid.kotlin_project.localDB.UserEntity
-import androidx.room.DeleteTable
+import com.cookandroid.kotlin_project.localDB.entities.UserEntity
 
 @Dao
 interface UserDAO {
@@ -24,7 +23,7 @@ interface UserDAO {
     fun findByUsername(username: String): UserEntity
 
     @Insert
-    fun insertAll(vararg users:UserEntity)
+    fun insertAll(vararg users: UserEntity)
 
     @Delete
     fun delete(user: UserEntity)

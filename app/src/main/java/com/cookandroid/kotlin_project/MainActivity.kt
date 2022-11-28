@@ -4,8 +4,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.room.Room
@@ -14,9 +12,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.cookandroid.kotlin_project.backendinterface.auth.signin
 import com.cookandroid.kotlin_project.backendinterface.dto.UserDTO
 import com.cookandroid.kotlin_project.databinding.ActivityMainBinding
-import com.cookandroid.kotlin_project.localDB.UserEntity
+import com.cookandroid.kotlin_project.localDB.entities.UserEntity
 import com.cookandroid.kotlin_project.localDB.database.UserDatabase
-import com.cookandroid.kotlin_project.stomp.StompClientService
+import com.cookandroid.kotlin_project.backendinterface.stomp.StompClientService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,11 +40,8 @@ class MainActivity : AppCompatActivity() {
                 database.execSQL("DROP TABLE UserTable")
             }
         }
-        roomDB = Room.databaseBuilder(
-            applicationContext,
-            UserDatabase::class.java,
-            "UserTable"
-        ).fallbackToDestructiveMigration().addMigrations(MIGRATION_1_2).build()
+
+        roomDB = Room.databaseBuilder(applicationContext, UserDatabase::class.java, "UserTable").fallbackToDestructiveMigration().build()
 
         binding.btnJoin.setOnClickListener {
             startActivity(intent)
@@ -71,13 +66,10 @@ class MainActivity : AppCompatActivity() {
                             username = userDTO.username,
                             realname = userDTO.realname)
 
-                        Log.d("DEBUG", userEntity.uid.toString())
-
                         Thread {
                             val dao = roomDB.userDao()
+                            dao.deleteAll(dao.getAll())
                             dao.insertAll(userEntity)
-                            val userEntity = dao.getAll()
-                            Log.d("DEBUG", userEntity.toString())
                         }.start()
 
                         stopService(intent3)

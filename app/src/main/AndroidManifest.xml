@@ -20,7 +20,7 @@
         android:usesCleartextTraffic="true" >
 
         <service
-            android:name=".stomp.StompClientService"
+            android:name="com.cookandroid.kotlin_project.backendinterface.stomp.StompClientService"
             android:enabled="true"
             android:exported="true"></service>
 

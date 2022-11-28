@@ -1,4 +1,4 @@
-package com.cookandroid.kotlin_project.stomp.dto
+package com.cookandroid.kotlin_project.backendinterface.stomp.dto
 
 import com.cookandroid.kotlin_project.backendinterface.dto.MemberDTO
 import com.google.gson.annotations.Expose

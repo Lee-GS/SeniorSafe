@@ -1,4 +1,4 @@
-package com.cookandroid.kotlin_project.stomp
+package com.cookandroid.kotlin_project.backendinterface.stomp
 
 import android.annotation.SuppressLint
 import android.app.Service
@@ -8,12 +8,20 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import androidx.room.Room
 import com.cookandroid.kotlin_project.backendinterface.dto.GroupDTO
 import com.cookandroid.kotlin_project.backendinterface.dto.GroupTokenDTO
 import com.cookandroid.kotlin_project.backendinterface.group.get_stompToken
 import com.cookandroid.kotlin_project.backendinterface.group.group_get
-import com.cookandroid.kotlin_project.stomp.dto.StompChatDTO
-import com.cookandroid.kotlin_project.stomp.dto.StompGpsDTO
+import com.cookandroid.kotlin_project.backendinterface.stomp.dto.StompChatDTO
+import com.cookandroid.kotlin_project.backendinterface.stomp.dto.StompGpsDTO
+import com.cookandroid.kotlin_project.localDB.database.GroupDatabase
+import com.cookandroid.kotlin_project.localDB.database.MemberDatabase
+import com.cookandroid.kotlin_project.localDB.database.TokenDatabase
+import com.cookandroid.kotlin_project.localDB.database.UserDatabase
+import com.cookandroid.kotlin_project.localDB.entities.GroupEntity
+import com.cookandroid.kotlin_project.localDB.entities.MemberEntity
+import com.cookandroid.kotlin_project.localDB.entities.TokenEntity
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import retrofit2.Call
@@ -27,15 +35,19 @@ import ua.naiksoftware.stomp.dto.StompMessage
 
 class StompClientService : Service() {
 
-    private var server_url: String = "ws://backend.seniorsafe.tk/ws-stomp/websocket"
-    private var token: String = ""
     private var group_tokens = HashMap<String, GroupTokenDTO>()
     private var stompClient: StompClient ?= null
+    private val gson = Gson()
+
+    private lateinit var groupDB : GroupDatabase
+    private lateinit var memberDB : MemberDatabase
+    private lateinit var tokenDB : TokenDatabase
 
     private val api_group_get = group_get.create()
     private val api_group_stompToken = get_stompToken.create()
-    private val gson = Gson()
 
+    private var server_url: String = "ws://3.35.24.135:8080/ws-stomp/websocket"
+    private var token: String = ""
     private val loginTokenIntentKey = "token_login"
     private val serverUrlIntentKey = "server_url"
 
@@ -60,6 +72,7 @@ class StompClientService : Service() {
                 server_url = intent?.getStringExtra(serverUrlIntentKey).toString()
         }
         else stopSelf()
+
         connectToStompServer()
         return super.onStartCommand(intent, flags, startId)
     }
@@ -94,11 +107,18 @@ class StompClientService : Service() {
                 group_tokens.clear()
             })
 
-        handlerThread.post(Runnable {
+        Thread {
+            groupDB = Room.databaseBuilder(applicationContext, GroupDatabase::class.java, "GroupTable").fallbackToDestructiveMigrationFrom().build()
+            memberDB = Room.databaseBuilder(applicationContext, MemberDatabase::class.java, "MemberTable").fallbackToDestructiveMigrationFrom().build()
+            tokenDB = Room.databaseBuilder(applicationContext, TokenDatabase::class.java, "TokenTable").fallbackToDestructiveMigrationFrom().build()
+
+            groupDB.groupDao().deleteAll(groupDB.groupDao().getAll())
+            memberDB.memberDao().deleteAll(memberDB.memberDao().getAll())
+            tokenDB.tokenDao().deleteAll(tokenDB.tokenDao().getAll())
             var headers = listOf(StompHeader("token", token))
-            stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, server_url);
+            stompClient = Stomp.over(Stomp.ConnectionProvider.JWS, server_url);
             stompClient!!.connect(headers)
-        })
+        }.start()
 
         getGroupInfoAndTokenAndSubscribeStomp()
     }
@@ -110,28 +130,58 @@ class StompClientService : Service() {
                 if(result in 200..299) {
                     Log.d("api_group_get", response.body().toString())
                     val groupDTOs = response.body()!!.toList()
-                    groupDTOs.forEach { groupDTO -> getGroupTokens(groupDTO.groupId) }
+
+                    groupDTOs.forEach { groupDTO -> getGroupTokens(groupDTO) }
                 }
                 else {
                     Log.w("api_group_get", response.body().toString())
+                    stopSelf()
                 }
             }
 
             override fun onFailure(call: Call<List<GroupDTO>>, t: Throwable) {
-                Log.e("SubscribeStomp","${t.localizedMessage}")
+                Log.e("SubscribeStomp", t.localizedMessage)
                 t.printStackTrace()
+                stopSelf()
             }
         })
     }
 
-    private fun getGroupTokens(groupId: String) {
-        Log.d("getting group tokens", groupId)
-        api_group_stompToken.register(BearerToken = "Bearer $token", groupId = groupId).enqueue(object : Callback<GroupTokenDTO> {
+    private fun getGroupTokens(groupDTO: GroupDTO) {
+        Log.d("getting group tokens", groupDTO.groupId)
+        api_group_stompToken.register(BearerToken = "Bearer $token", groupId = groupDTO.groupId).enqueue(object : Callback<GroupTokenDTO> {
             override fun onResponse(call: Call<GroupTokenDTO>, response: Response<GroupTokenDTO>) {
                 val result = response.code();
                 if(result in 200..299) {
                     Log.d("api_group_token", response.body().toString())
-                    subscribeStomp(response.body()!!, groupId)
+                    subscribeStomp(response.body()!!, groupDTO.groupId)
+
+                    Thread {
+                        groupDB.groupDao().insertAll(GroupEntity(
+                            id = 0,
+                            gid = groupDTO.groupId,
+                            name = groupDTO.name))
+
+                        val groupEntity = groupDB.groupDao().findByGid(groupDTO.groupId)
+
+                        tokenDB.tokenDao().insertAll(TokenEntity(
+                                id = 0,
+                                groupId = groupEntity.id,
+                                token = response.body()!!.token,
+                                channelKey = response.body()!!.channelKey,
+                                alertKey = response.body()!!.alertKey,
+                                requestKey = response.body()!!.requestKey))
+
+                        groupDTO.participants!!.forEach { memberDTO ->
+                            memberDB.memberDao().insertAll(
+                                MemberEntity(
+                                    id = 0,
+                                    mid = memberDTO.id!!,
+                                    nickname = memberDTO.nickname!!,
+                                    isManager = memberDTO.isManager!!,
+                                    groupId = groupEntity.id))
+                        }
+                    }.start()
                 }
                 else {
                     Log.w("api_group_token", response.toString())
@@ -140,6 +190,7 @@ class StompClientService : Service() {
 
             override fun onFailure(call: Call<GroupTokenDTO>, t: Throwable) {
                 Log.e("getGroupTokens", t.localizedMessage)
+                t.printStackTrace()
             }
         })
     }
