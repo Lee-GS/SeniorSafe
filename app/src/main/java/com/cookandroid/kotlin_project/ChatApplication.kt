@@ -9,7 +9,9 @@ import android.view.View
 import android.widget.Adapter
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import com.cookandroid.kotlin_project.databinding.ActivityChatApplicationBinding
+import com.cookandroid.kotlin_project.localDB.database.UserDatabase
 import com.cookandroid.kotlin_project.stomp.StompClientService
 import com.cookandroid.kotlin_project.stomp.dto.StompChatDTO
 
@@ -21,6 +23,8 @@ class ChatApplication : AppCompatActivity() {
 
     private lateinit var stompService : StompClientService
     private var mStompServiceBound : Boolean = false;
+
+    private lateinit var roomDB : UserDatabase
 
     private val connection = object : ServiceConnection {
 
@@ -42,6 +46,12 @@ class ChatApplication : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_application)
 
+        roomDB = Room.databaseBuilder(
+            applicationContext,
+            UserDatabase::class.java,
+            "UserTable"
+        ).build()
+
         preferences = getSharedPreferences("email", Context.MODE_PRIVATE)
 
         val binding = ActivityChatApplicationBinding.inflate(layoutInflater)
@@ -52,12 +62,21 @@ class ChatApplication : AppCompatActivity() {
 
 
         binding.messageActivityImageButton.setOnClickListener{
+
+            val chatDTO = StompChatDTO(
+                payload = ActivityChatApplicationBinding.inflate(layoutInflater)
+                    .messageActivityEditText.toString())
+
+            //if(mStompServiceBound)
+                //stompService.sendChat(chatDTO,)
+            /*
             val user_data = StompChatDTO(
 
             )
             mAdapter.addItem(user_data)
             mAdapter.notifyDataSetChanged()
             binding.messageActivityEditText.setText("")
+             */
         }
 
     }

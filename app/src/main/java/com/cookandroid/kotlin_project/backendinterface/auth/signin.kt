@@ -17,7 +17,7 @@ interface signin {
     fun register_signin(@Body jsonparams: UserDTO) : Call<UserDTO>
 
     companion object { // static 처럼 공유객체로 사용가능함. 모든 인스턴스가 공유하는 객체로서 동작함.
-        private const val BASE_URL = "http://kangtong1105.codns.com:8080" // 주소
+        private const val BASE_URL = "http://backend.seniorsafe.tk" // 주소
 
         fun create(): signin {
 

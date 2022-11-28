@@ -4,27 +4,27 @@ import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.cookandroid.kotlin_project.backendinterface.auth.signin
 import com.cookandroid.kotlin_project.backendinterface.dto.UserDTO
 import com.cookandroid.kotlin_project.databinding.ActivityMainBinding
+import com.cookandroid.kotlin_project.localDB.UserEntity
+import com.cookandroid.kotlin_project.localDB.database.UserDatabase
 import com.cookandroid.kotlin_project.stomp.StompClientService
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.POST
 
 class MainActivity : AppCompatActivity() {
 
-    val api_singin = signin.create();
+    private val api_singin = signin.create();
+    private lateinit var roomDB : UserDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +36,17 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)// java의 findviewbyid 작업을 안해도됨
 
         setContentView(binding.root)
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("DROP TABLE UserTable")
+            }
+        }
+        roomDB = Room.databaseBuilder(
+            applicationContext,
+            UserDatabase::class.java,
+            "UserTable"
+        ).fallbackToDestructiveMigration().addMigrations(MIGRATION_1_2).build()
 
         binding.btnJoin.setOnClickListener {
             startActivity(intent)
@@ -52,6 +63,23 @@ class MainActivity : AppCompatActivity() {
                     if(result in 200..299) {
                         Log.d("로그인성공", response.body().toString())
                         intent3.putExtra("token_login", response.body()!!.token)
+
+                        val userDTO = response.body()!!
+                        var userEntity = UserEntity(
+                            uid = 0,
+                            email = userDTO.email,
+                            username = userDTO.username,
+                            realname = userDTO.realname)
+
+                        Log.d("DEBUG", userEntity.uid.toString())
+
+                        Thread {
+                            val dao = roomDB.userDao()
+                            dao.insertAll(userEntity)
+                            val userEntity = dao.getAll()
+                            Log.d("DEBUG", userEntity.toString())
+                        }.start()
+
                         stopService(intent3)
                         startService(intent3)
                         startActivity(intent2)

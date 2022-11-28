@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import com.cookandroid.kotlin_project.databinding.ReceiveMsgBinding
 import com.cookandroid.kotlin_project.databinding.SendMsgBinding
+import com.cookandroid.kotlin_project.localDB.database.UserDatabase
 import com.cookandroid.kotlin_project.stomp.dto.StompChatDTO
 import java.sql.Date
 import java.text.SimpleDateFormat
@@ -32,7 +34,6 @@ class ChatAdapter(context: Context, val arrayList: ArrayList<StompChatDTO>): Rec
         else{
             return Holder_receive(ReceiveMsgBinding.inflate(LayoutInflater.from(parent.context),parent,false))
         }
-
     }
     override fun getItemCount(): Int {
         return data.size
@@ -70,10 +71,9 @@ class ChatAdapter(context: Context, val arrayList: ArrayList<StompChatDTO>): Rec
             binding.receiveTime.text = dateFormat.format(date).toString()
         }
     }
-
-    /*override fun getItemViewType(position: Int): Int {//여기서 뷰타입을 1, 2로 바꿔서 지정해줘야 내채팅 너채팅을 바꾸면서 쌓을 수 있음
+/*
+    override fun getItemViewType(position: Int): Int {//여기서 뷰타입을 1, 2로 바꿔서 지정해줘야 내채팅 너채팅을 바꾸면서 쌓을 수 있음
         //내 아이디와 arraylist의 name이 같다면 내꺼 아니면 상대꺼
-        MySharedPreferences.getUserId()
 
         return if (user.sender?.id ==  ) {
             1
@@ -81,5 +81,4 @@ class ChatAdapter(context: Context, val arrayList: ArrayList<StompChatDTO>): Rec
             2
         }
     }*/
-
 }

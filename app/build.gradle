@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
+
+apply plugin: 'kotlin-kapt'
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
@@ -54,6 +56,16 @@ allprojects {
 }
 
 dependencies {
+
+    implementation "androidx.room:room-runtime:2.4.3"
+    kapt "androidx.room:room-compiler:2.4.3"
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation("androidx.room:room-ktx:2.4.3")
+
+    // optional - Test helpers
+    testImplementation("androidx.room:room-testing:2.4.3")
+
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.naver.maps:map-sdk:3.16.0'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'

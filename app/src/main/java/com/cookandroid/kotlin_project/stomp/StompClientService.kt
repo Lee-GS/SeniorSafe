@@ -27,7 +27,7 @@ import ua.naiksoftware.stomp.dto.StompMessage
 
 class StompClientService : Service() {
 
-    private var server_url: String = "ws://kangtong1105.codns.com:8080/ws-stomp/websocket"
+    private var server_url: String = "ws://backend.seniorsafe.tk/ws-stomp/websocket"
     private var token: String = ""
     private var group_tokens = HashMap<String, GroupTokenDTO>()
     private var stompClient: StompClient ?= null
@@ -201,4 +201,3 @@ class StompClientService : Service() {
         })
     }
 }
-
