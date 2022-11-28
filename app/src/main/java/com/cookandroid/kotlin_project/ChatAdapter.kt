@@ -22,6 +22,12 @@ class ChatAdapter(context: Context, val arrayList: ArrayList<StompChatDTO>): Rec
             data.add(item)
         }
     }
+
+    fun setItem(items: List<StompChatDTO>) {
+        data.clear()
+        items.forEach { item -> data.add(item) }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view: View
         //getItemViewType 에서 뷰타입 1을 리턴받았다면 내채팅레이아웃을 받은 Holder를 리턴
@@ -78,5 +84,7 @@ class ChatAdapter(context: Context, val arrayList: ArrayList<StompChatDTO>): Rec
         } else {
             2
         }
-    }*/
+    }
+
+ */
 }

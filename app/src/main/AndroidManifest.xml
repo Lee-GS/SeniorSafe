@@ -58,6 +58,7 @@
         <meta-data
             android:name="com.naver.maps.map.api_key"
             android:value="api_key" />
+
     </application>
 
 </manifest>
